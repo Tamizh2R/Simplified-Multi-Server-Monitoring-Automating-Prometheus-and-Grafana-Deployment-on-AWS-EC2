@@ -1,0 +1,74 @@
+
+
+**Step 1: Launch an AWS EC2 Instance**
+1. Log in to your AWS Management Console.
+2. Navigate to EC2 and launch a new instance with your preferred Linux distribution.
+3. Make sure you have the necessary security group rules to allow incoming traffic on ports you'll use (e.g., 22 for SSH, 9090 for Prometheus, 3000 for Grafana).
+
+**Step 2: Connect to Your EC2 Instance**
+1. Use SSH to connect to your EC2 instance: `ssh -i path/to/your/key.pem ec2-user@your-instance-ip`
+
+**Step 3: Install Prometheus**
+1. Download Prometheus: 
+   ```
+   wget https://github.com/prometheus/prometheus/releases/download/vX.Y.Z/prometheus-X.Y.Z.linux-amd64.tar.gz
+   tar xvfz prometheus-X.Y.Z.linux-amd64.tar.gz
+   cd prometheus-X.Y.Z.linux-amd64
+   ```
+
+2. Create a configuration file (`prometheus.yml`):
+   ```
+   global:
+     scrape_interval: 15s
+
+   scrape_configs:
+     - job_name: 'prometheus'
+       static_configs:
+         - targets: ['localhost:9090']
+   ```
+
+3. Start Prometheus:
+   ```
+   ./prometheus --config.file=prometheus.yml
+   ```
+
+**Step 4: Install Grafana**
+1. Install Grafana:
+   ```
+   sudo yum install -y https://dl.grafana.com/oss/release/grafana-X.Y.Z.rpm
+   ```
+
+2. Start and enable Grafana service:
+   ```
+   sudo systemctl start grafana-server
+   sudo systemctl enable grafana-server
+   ```
+
+**Step 5: Configure Grafana**
+1. Access Grafana web interface in your browser: `http://your-instance-ip:3000`
+2. Log in with default credentials (admin/admin).
+3. Change the admin password.
+4. Add Prometheus as a data source:
+   - Go to "Configuration" > "Data Sources".
+   - Add a data source.
+   - Choose "Prometheus".
+   - Set the URL to `http://localhost:9090`.
+
+**Step 6: Create Dashboards in Grafana**
+1. Explore existing dashboards or create your own to visualize Prometheus metrics.
+
+**Step 7: Upload to Git**
+1. Initialize a new Git repository in your local project directory: `git init`.
+2. Add your files: `git add .`.
+3. Commit your changes: `git commit -m "Initial commit"`.
+4. Create a new repository on your Git platform (e.g., GitHub).
+5. Follow the instructions to add your remote repository and push your code to it:
+   ```
+   git remote add origin <repository-url>
+   git branch -M main
+   git push -u origin main
+   ```
+
+Please remember that this is a general guide, and there might be variations based on your specific AWS setup, Linux distribution, and version of Prometheus and Grafana. Always consult the official documentation for each tool for the most accurate and up-to-date instructions.
+
+Lastly, before making the repository public, ensure that you don't include any sensitive information (like passwords or access keys) in your code or configuration files. Use environment variables or other secure methods to manage these details.
